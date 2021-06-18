@@ -183,3 +183,22 @@ executable hstore-bench-writter
     -Wall -Wcompat -Widentities -Wincomplete-record-updates
     -Wincomplete-uni-patterns -Wpartial-fields -Wredundant-constraints
     -threaded -rtsopts -with-rtsopts=-N
+
+executable hstore-bench-mix
+  main-is:          hstoreEndToEndBenchTool.hs
+  hs-source-dirs:   app
+  build-depends:
+    , base
+    , optparse-applicative  ^>=0.16
+    , data-default
+    , containers
+    , hstream-store
+    , Z-Data
+    , Z-IO
+    , random
+    , async
+  default-language: Haskell2010
+  ghc-options:
+    -Wall -Wcompat -Widentities -Wincomplete-record-updates
+    -Wincomplete-uni-patterns -Wpartial-fields -Wredundant-constraints
+    -threaded -rtsopts -with-rtsopts=-N

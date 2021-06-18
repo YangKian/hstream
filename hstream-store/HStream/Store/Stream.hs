@@ -55,6 +55,7 @@ module HStream.Store.Stream
     -- * Reader
   , FFI.RecordByteOffset (..)
   , FFI.DataRecord (..)
+  , FFI.LDReader
 
   , LD.newLDReader
   , LD.readerStartReading
