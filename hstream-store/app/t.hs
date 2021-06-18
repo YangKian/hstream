@@ -3,24 +3,24 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards   #-}
 
+import           Control.Concurrent
+import           Control.Concurrent.Async
+import           Control.Exception        (finally)
 import           Control.Monad
-import Control.Concurrent
-import Control.Concurrent.Async
-import           Control.Exception                (finally)
-import           Data.Int            (Int64)
+import           Data.Int                 (Int64)
 import           Data.List
-import  Data.Map.Strict     as Map
+import           Data.Map.Strict          as Map
+import           Data.Maybe               (fromJust, isJust)
 import           Data.String
-import           GHC.Stack           (HasCallStack)
+import           GHC.Stack                (HasCallStack)
 import           Options.Applicative
 import           System.Random
 import           Text.Printf
-import           Z.Data.CBytes       (CBytes, pack)
-import           Z.IO.Time           (SystemTime (..), getSystemTime')
-import           Data.Maybe                        (fromJust, isJust)
-import qualified Z.Data.Vector       as ZV
+import           Z.Data.CBytes            (CBytes, pack)
+import qualified Z.Data.Vector            as ZV
+import           Z.IO.Time                (SystemTime (..), getSystemTime')
 
-import           HStream.Store       hiding (info)
+import           HStream.Store            hiding (info)
 
 logDeviceConfigPath :: CBytes
 logDeviceConfigPath = "/data/store/logdevice.conf"
