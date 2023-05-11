@@ -79,7 +79,6 @@ main = runCommand =<<
 
 runCommand :: HStreamCommand -> IO ()
 runCommand HStreamCommand{..} = do
-  putStr "hello"
   rConnOpts <- refineCliConnOpts cliConnOpts
   case cliCommand of
     HStreamNodes  opts       -> hstreamNodes  rConnOpts opts
