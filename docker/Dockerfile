@@ -11,8 +11,7 @@ FROM ${BUILDER_IMAGE} as builder
 COPY . /hstream
 ARG BUILD_TYPE="ReleaseBuild"
 
-RUN cabal update && \
-    cd /hstream && make && \
+RUN cd /hstream && make && \
     cabal build --flags "${BUILD_TYPE}" all && \
     cabal install --flags "${BUILD_TYPE}" hstream hstream-admin hstream-store && \
     cabal install --flags "${BUILD_TYPE}" \
