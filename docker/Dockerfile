@@ -18,9 +18,9 @@ RUN cabal update && \
     cabal install --flags "${BUILD_TYPE}" \
       --constraint="hstream +hstream_use_grpc_haskell" \
       --constraint="hstream-gossip +hstream_use_grpc_haskell" \
-      --program-suffix="-old" hstream && \
-    mv dist-newstyle /tmp/dist-newstyle && \
-    rm -rf /hstream
+      --program-suffix="-old" hstream
+#COPY /hstream/dist-newstyle /dist-newstyle
+#RUN rm -rf /hstream
 
 # ------------------------------------------------------------------------------
 

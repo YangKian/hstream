@@ -66,13 +66,13 @@ jobs:
 #          tags:
 #            - type=raw,value=${{ matrix.tag }}
 
-      - name: Load dist-newstyle if exist
-        run: |
-          set -ex
-          if [ -d "/tmp/dist-newstyle" ]; then
-            echo "find dist-newstyle cache"
-            mv /tmp/dist-newstyle .
-          fi
+#      - name: Load dist-newstyle if exist
+#        run: |
+#          set -ex
+#          if [ -d "/tmp/dist-newstyle" ]; then
+#            echo "find dist-newstyle cache"
+#            mv /tmp/dist-newstyle .
+#          fi
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
@@ -89,6 +89,14 @@ jobs:
             LD_IMAGE=${{ matrix.ld_image }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+#      - name: Save dist-newstyle
+#        run: |
+#          set -ex
+#          if [ -d "dist-newstyle" ]; then
+#            echo "save dist-newstyle cache"
+#            mv dist-newstyle /tmp
+#          fi
 
 #      - name: Docker build
 #        run: |
