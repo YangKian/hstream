@@ -6,6 +6,7 @@ on:
 
 env:
   IMAGE_NAME: "hstreamdb/hstream"
+  GHC: "latest"
 
 jobs:
   build:
@@ -17,10 +18,10 @@ jobs:
             ld_image: "hstreamdb/logdevice:latest"
 #            tag: "${GITHUB_REF#refs/*/}"
             tag: "latest"
-          - builder_image: "hstreamdb/haskell:rqlite_9.2"
-            ld_image: "hstreamdb/logdevice:rqlite"
-#            tag: "rqlite_${GITHUB_REF#refs/*/}"
-            tag: "rqlite_latest"
+#          - builder_image: "hstreamdb/haskell:rqlite_9.2"
+#            ld_image: "hstreamdb/logdevice:rqlite"
+##            tag: "rqlite_${GITHUB_REF#refs/*/}"
+#            tag: "rqlite_latest"
     steps:
       - run: |
           echo "${{ matrix.tag }}"
@@ -28,7 +29,36 @@ jobs:
         with:
           submodules: "recursive"
 
-#      - name: Docker meta
+#      - name: set env
+#        run: |
+#          docker pull docker.io/hstreamdb/haskell:${{ env.GHC }}
+#          GHC_MAJOR_VER="$(echo ${{ env.GHC }} | cut -d'.' -f1)"
+#          echo "GHC_MAJOR_VER=$GHC_MAJOR_VER" >> $GITHUB_ENV
+#          if [ "$GHC_MAJOR_VER" = "8" ]; then
+#            echo "EXTRA_CABAL_ARGS='--project-file=cabal.project.ghc810'" >> $GITHUB_ENV
+#          else
+#            echo "EXTRA_CABAL_ARGS=''" >> $GITHUB_ENV
+#          fi
+#          echo "CABAL=python3 script/dev-tools cabal --check --no-interactive --no-services-required \
+#                -i docker.io/hstreamdb/haskell:${{ env.GHC }} -- " >> $GITHUB_ENV
+#
+#      - name: cabal freeze
+#        run: |
+#          ${{ env.CABAL }} update
+#          ${{ env.CABAL }} ${{ env.EXTRA_CABAL_ARGS }} freeze
+
+      - name: cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cabal/packages
+            ~/.cabal/store
+            /tmp/dist-newstyle
+          key: ${{ runner.os }}-build-v2-${{ hashFiles('**/*.cabal') }}-${{ hashFiles('**/cabal.project*') }}
+          restore-keys: |
+            ${{ runner.os }}-build-v2-
+
+      #      - name: Docker meta
 #        id: meta
 #        uses: docker/metadata-action@v4
 #        with:
@@ -36,11 +66,16 @@ jobs:
 #          tags:
 #            - type=raw,value=${{ matrix.tag }}
 
+      - name: Load dist-newstyle if exist
+        run: |
+          set -ex
+          if [ -d "/tmp/dist-newstyle" ]; then
+            echo "find dist-newstyle cache"
+            mv /tmp/dist-newstyle .
+          fi
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
-
-#      - name: Cache Docker layers
-#        uses: actions/cache@v3
 
       - name: Build and push
         uses: docker/build-push-action@v4

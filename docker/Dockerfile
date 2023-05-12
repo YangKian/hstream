@@ -11,13 +11,15 @@ FROM ${BUILDER_IMAGE} as builder
 COPY . /hstream
 ARG BUILD_TYPE="ReleaseBuild"
 
-RUN cd /hstream && make && \
+RUN cabal update && \
+    cd /hstream && make && \
     cabal build --flags "${BUILD_TYPE}" all && \
     cabal install --flags "${BUILD_TYPE}" hstream hstream-admin hstream-store && \
     cabal install --flags "${BUILD_TYPE}" \
       --constraint="hstream +hstream_use_grpc_haskell" \
       --constraint="hstream-gossip +hstream_use_grpc_haskell" \
       --program-suffix="-old" hstream && \
+    mv dist-newstyle /tmp/dist-newstyle && \
     rm -rf /hstream
 
 # ------------------------------------------------------------------------------
