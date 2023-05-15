@@ -53,10 +53,16 @@ jobs:
           path: |
             ~/.cabal/packages
             ~/.cabal/store
-            /tmp/dist-newstyle
+            ~/dist-newstyle
           key: ${{ runner.os }}-build-v2-${{ hashFiles('**/*.cabal') }}-${{ hashFiles('**/cabal.project*') }}
           restore-keys: |
             ${{ runner.os }}-build-v2-
+
+      - name: create-cache-dir
+        run: |
+          echo $HOME
+          mkdir -p ~/.cabal
+          mkdir -p ~/dist-newstyle
 
       #      - name: Docker meta
 #        id: meta
@@ -71,7 +77,7 @@ jobs:
 #          set -ex
 #          if [ -d "/tmp/dist-newstyle" ]; then
 #            echo "find dist-newstyle cache"
-#            mv /tmp/dist-newstyle .
+#            mv /dist-newstyle .
 #          fi
 
       - name: Set up Docker Buildx
@@ -84,6 +90,9 @@ jobs:
           file: docker/Dockerfile
           push: false
           tags: ${{ env.IMAGE_NAME }}:${{ matrix.tag }}
+          build-contexts: |
+            cabal_cache=/home/runner/.cabal
+            dist_cache=/home/runner/dist-newstyle
           build-args: |
             BUILDER_IMAGE=${{ matrix.builder_image }}
             LD_IMAGE=${{ matrix.ld_image }}
@@ -95,7 +104,7 @@ jobs:
 #          set -ex
 #          if [ -d "dist-newstyle" ]; then
 #            echo "save dist-newstyle cache"
-#            mv dist-newstyle /tmp
+#            mv ./dist-newstyle /dist-newstyle
 #          fi
 
 #      - name: Docker build

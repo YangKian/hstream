@@ -8,10 +8,14 @@ ARG LD_IMAGE="hstreamdb/logdevice:latest"
 
 FROM ${BUILDER_IMAGE} as builder
 
-COPY . /hstream
+#COPY . /hstream
 ARG BUILD_TYPE="ReleaseBuild"
 
-RUN cabal update && \
+RUN --mount=type=bind,from=cabal_cache,target=/.cabal,rw \
+    --mount=type=bind,from=dist_cache,target=/hstream/dist-newstyle,rw \
+    --mount=type=bind,target=/hstream,rw \
+    ln -s /.cabal /root/.cabal && \
+    cabal update && \
     cd /hstream && make && \
     cabal build --flags "${BUILD_TYPE}" all && \
     cabal install --flags "${BUILD_TYPE}" hstream hstream-admin hstream-store && \
@@ -19,6 +23,16 @@ RUN cabal update && \
       --constraint="hstream +hstream_use_grpc_haskell" \
       --constraint="hstream-gossip +hstream_use_grpc_haskell" \
       --program-suffix="-old" hstream
+
+
+#RUN cabal update && \
+#    cd /hstream && make && \
+#    cabal build --flags "${BUILD_TYPE}" all && \
+#    cabal install --flags "${BUILD_TYPE}" hstream hstream-admin hstream-store && \
+#    cabal install --flags "${BUILD_TYPE}" \
+#      --constraint="hstream +hstream_use_grpc_haskell" \
+#      --constraint="hstream-gossip +hstream_use_grpc_haskell" \
+#      --program-suffix="-old" hstream
 #COPY /hstream/dist-newstyle /dist-newstyle
 #RUN rm -rf /hstream
 
@@ -65,7 +79,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
       vim                            \
     && rm -rf /var/lib/apt/lists/* && apt-get clean
 
-COPY --from=docker:dind /usr/local/bin/docker /usr/local/bin/
+COPY --from=docker /usr/local/bin/docker /usr/local/bin/
 
 COPY --from=builder /usr/local/lib/ /usr/local/lib/
 COPY --from=builder /usr/lib/libjemalloc.so.2 /usr/lib/libjemalloc.so.2
