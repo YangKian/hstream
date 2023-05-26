@@ -8,13 +8,11 @@ ARG LD_IMAGE="hstreamdb/logdevice:latest"
 
 FROM ${BUILDER_IMAGE} as builder
 
-#COPY . /hstream
+COPY . /hstream
 ARG BUILD_TYPE="ReleaseBuild"
 
-RUN --mount=type=bind,from=cabal_cache,target=/.cabal,rw \
-    --mount=type=bind,from=dist_cache,target=/hstream/dist-newstyle,rw \
-    --mount=type=bind,target=/hstream,rw \
-    ln -s /.cabal /root/.cabal && \
+RUN --mount=type=cache,target=/root/.cabal \
+    --mount=type=cache,target=/hstream/dist_cache \
     cabal update && \
     cd /hstream && make && \
     cabal build --flags "${BUILD_TYPE}" all && \
